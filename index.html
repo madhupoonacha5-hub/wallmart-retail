@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkout Incident Control Room</title>
+<meta name="description" content="An independent retail operations work sample for a checkout incident.">
+<style>
+:root{color-scheme:light;--navy:#0d192e;--ink:#15233b;--muted:#516078;--line:#d9e1ec;--paper:#edf2f8;--white:#fff;--blue:#134fb6;--cyan:#82d8fd;--amber:#914a0b;--red:#aa2336;--green:#116449;--shadow:0 10px 28px #10254809;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink)}[hidden]{display:none!important}button,select,input{font:inherit}button,select{border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);min-height:40px;padding:8px 12px}button{cursor:pointer;font-weight:650}button:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}button:disabled{opacity:.48;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #1786f0;outline-offset:3px}.primary,.primary:hover:not(:disabled){background:#1458d0;color:white;border-color:#1458d0}.quiet{color:var(--muted)}.danger{color:var(--red);border-color:#efbac2}.shell{width:min(1240px,calc(100% - 48px));margin:auto}
+.top{background:var(--navy);color:white;border-bottom:4px solid #2d6de2}.mast{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:19px 0;border-bottom:1px solid #ffffff26}.identity{display:flex;align-items:center;gap:10px;font-size:.87rem;font-weight:700;letter-spacing:.035em}.mark{width:26px;height:26px;border:1px solid #80bbff;border-radius:7px;display:grid;place-items:center;color:var(--cyan);font-family:monospace}.dark-tag{border:1px solid #547295;color:#e1efff;padding:5px 9px;border-radius:99px;font-size:.72rem;font-weight:650}.hero{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:25px;align-items:end;padding:23px 0 20px}.eyebrow{font-size:.69rem;font-weight:780;text-transform:uppercase;letter-spacing:.105em;color:var(--blue);margin:0 0 6px}.top .eyebrow{color:var(--cyan)}h1,h2,h3,p{margin:0}h1{font-size:clamp(2rem,4.1vw,3.65rem);letter-spacing:-.06em;line-height:1.04}h2{font-size:clamp(1.45rem,2.7vw,2.1rem);letter-spacing:-.045em;line-height:1.15}h3{font-size:1.04rem;letter-spacing:-.018em}p,li{line-height:1.48}.hero p:not(.eyebrow){margin-top:8px;color:#becde3;font-size:.92rem}.incident-status{border-left:2px solid #619aef;padding:5px 0 5px 13px}.incident-status strong{display:block;font-size:1.02rem}.incident-status small{color:#c6d6eb}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding-bottom:20px}.kpi{padding:12px 14px;background:#162740;border:1px solid #ffffff22;border-radius:10px;min-width:0}.kpi-label{color:#c5d3e9;font-size:.78rem;font-weight:700}.kpi strong,.big,.number{font-variant-numeric:tabular-nums}.kpi strong{display:block;font-size:clamp(1.35rem,2.6vw,2.13rem);line-height:1.2;letter-spacing:-.06em;margin:4px 0}.kpi small{color:#bdcde4;font-size:.72rem}.kpi.risk strong{color:#ffd28c}
+.dock{position:sticky;top:0;z-index:3;background:#edf2f8f5;border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}.dock-inner{padding:10px 0 0}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.controls,.inline{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.status{font-size:.8rem;color:var(--muted);font-weight:650}.status b{color:var(--ink)}.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:9px}.tab{border-radius:8px 8px 0 0;border-color:transparent;background:transparent;text-align:left;border-bottom:3px solid transparent;padding:9px 11px}.tab[aria-selected=true]{background:white;color:var(--blue);border-bottom-color:var(--blue)}.tab span{font-size:.66rem;color:var(--muted);font-variant-numeric:tabular-nums;margin-right:6px}
+main{padding:17px 0 26px}.stage{display:flex;justify-content:space-between;align-items:start;gap:15px;margin-bottom:14px}.stage p:not(.eyebrow){color:var(--muted);max-width:720px;margin-top:5px;font-size:.88rem}.pill{display:inline-block;border-radius:99px;padding:4px 8px;font-weight:750;font-size:.71rem;line-height:1.2;background:#e5edfa;color:#174888;vertical-align:middle}.pill.good{background:#e1f3ea;color:var(--green)}.pill.warn{background:#fff0d7;color:var(--amber)}.pill.bad{background:#fbe4e9;color:var(--red)}.stage .pill{white-space:nowrap;margin-top:5px}.grid{display:grid;grid-template-columns:minmax(0,1.36fr) minmax(0,1fr);gap:12px}.even{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{min-width:0;background:var(--white);border:1px solid var(--line);border-radius:13px;padding:15px 17px;box-shadow:var(--shadow)}.panel-head{display:flex;justify-content:space-between;gap:7px;align-items:center;margin-bottom:11px}.panel .note{font-size:.78rem;color:var(--muted);margin-top:9px}.store-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.store{padding:7px 5px;border-radius:6px;border:1px solid #dbe5f1;background:#f1f6ff;min-width:0}.store span,.store strong{display:block;white-space:nowrap}.store span{font-size:.67rem;color:var(--muted)}.store strong{font-size:.8rem}.store.affected{background:#fff0e9;border-color:#efc4b1;color:#842936}.store.affected span{color:#842936}.store.monitor{background:#e6f4ef;border-color:#badbcc;color:var(--green)}
+.chart{height:108px;display:flex;align-items:end;gap:7px;border-bottom:1px solid var(--line);margin:16px 0 5px}.bar-group{flex:1;height:100%;display:flex;align-items:end;justify-content:center;gap:3px}.bar{width:min(20px,36%);border-radius:4px 4px 0 0;background:#a6bedf;transition:height .35s}.bar.now{background:#235dc3}.axis{display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:.68rem;color:var(--muted)}.legend{display:flex;gap:14px;font-size:.73rem;color:var(--muted);margin-top:8px}.key{display:inline-block;width:8px;height:8px;margin-right:5px;background:#a6bedf;border-radius:2px}.key.now{background:#235dc3}
+.evidence{display:grid;gap:8px}.evidence div,.callout{padding:9px 11px;border-radius:8px;background:#f1f5fb;border-left:3px solid #97afd2}.evidence b,.callout b{display:block;font-size:.79rem}.evidence p,.callout p{font-size:.81rem;color:var(--muted);margin-top:3px}.callout{border-left-color:var(--blue);margin-top:10px}.callout.warn{border-left-color:#c26d23;background:#fff6e8}.checks{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.check{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.77rem;padding:6px 0}.check small{color:var(--muted)}
+.options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}.option{position:relative;padding:12px}.option.chosen{border:2px solid #2d68d2;padding:11px}.option h3{margin:6px 0 2px}.option .number{font-weight:760;font-size:1.44rem;letter-spacing:-.05em}.option dl{display:grid;grid-template-columns:1fr auto;gap:4px 7px;margin:6px 0 8px;font-size:.75rem}.option dt{color:var(--muted)}.option dd{margin:0;text-align:right;font-weight:690;font-variant-numeric:tabular-nums}.option button{width:100%;font-size:.77rem;min-height:34px}.option .note{min-height:2.5em}.range{display:grid;gap:4px}.range label{font-size:.78rem;font-weight:700}.range output{font-variant-numeric:tabular-nums;color:var(--blue);font-weight:800}.range input{width:100%;accent-color:var(--blue)}details{border-top:1px solid var(--line);padding-top:8px;margin-top:10px}summary{cursor:pointer;font-size:.8rem;font-weight:760;color:var(--blue)}.settings{display:grid;gap:7px;margin-top:9px}.heat{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}.heat div{border-radius:5px;padding:7px 2px;background:#eaf2fb;text-align:center;font-size:.68rem;overflow-wrap:anywhere}.heat div.hot{background:#ffecd2;color:#733706}.heat b{display:block;font-variant-numeric:tabular-nums}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:.78rem}th,td{padding:8px 5px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:700}tr:last-child td{border-bottom:0}.ledger td:nth-child(2){min-width:130px}.ledger td:first-child{white-space:nowrap}
+.outcomes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.outcome{background:#edf4ff;border-radius:8px;padding:9px}.outcome strong{display:block;font-size:1.45rem;letter-spacing:-.05em}.outcome small{font-size:.73rem;color:var(--muted)}.compact-list{margin:8px 0 0;padding-left:17px;font-size:.83rem;color:var(--muted)}.compact-list li+li{margin-top:5px}.activity{margin-top:12px}.activity ol{margin:7px 0 0;padding-left:18px;font-size:.77rem}.activity li+li{margin-top:5px}.activity time{font-variant-numeric:tabular-nums;font-weight:750;color:var(--blue)}.foot{display:flex;justify-content:space-between;gap:10px;padding:0 0 20px;color:var(--muted);font-size:.72rem}.foot p{margin-top:5px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.changed{animation:enter .26s ease-out}@keyframes enter{from{opacity:.76;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(max-width:850px){.shell{width:calc(100% - 30px)}.hero{grid-template-columns:1fr 200px}.options{gap:6px}.store-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){.shell{width:calc(100% - 20px)}.hero,.grid,.even{grid-template-columns:1fr}.hero{gap:13px}.kpis{grid-template-columns:1fr 1fr}.dock{position:static}.options{grid-template-columns:1fr}.option .note{min-height:0}.stage{flex-direction:column;gap:3px}.mast{padding:12px 0}.foot{flex-direction:column}.panel{padding:13px}.tab{padding-inline:5px}.tab span{margin-right:3px}.toolbar button{padding-inline:8px}.ledger{min-width:440px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{.top,.dock,.foot,.stage button,.controls,.activity{display:none!important}body{background:white}.shell{width:100%}.panel{box-shadow:none}main{padding:0}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="shell">
+  <div class="mast"><div class="identity"><span class="mark" aria-hidden="true">+</span> RETAIL OPERATIONS / INCIDENT RESPONSE</div><span class="dark-tag">Fictional scenario</span></div>
+  <div class="hero">
+   <div><p class="eyebrow">Checkout &amp; contact center</p><h1>Checkout incident control room</h1><p>Trace a payment failure from store impact through staffing, recovery and the pilot decision.</p></div>
+   <div class="incident-status"><p class="eyebrow">Incident CI-042</p><strong id="incident-status">Standing by</strong><small id="incident-clock">Peak trading window</small></div>
+  </div>
+  <div class="kpis" id="kpis" aria-label="Incident scorecard"></div>
+ </div>
+</header>
+<div class="dock"><div class="shell dock-inner">
+ <div class="toolbar">
+  <div class="controls">
+   <button type="button" id="play" class="primary">Play guided replay</button>
+   <button type="button" id="next">Next event</button>
+   <button type="button" id="reset">Reset</button>
+   <label class="sr" for="speed">Playback speed</label><select id="speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select>
+  </div>
+  <div class="status" id="run-status"></div>
+ </div>
+ <nav class="tabs" role="tablist" aria-label="Incident stages">
+  <button class="tab" id="tab-sense" role="tab" aria-controls="sense" aria-selected="true" data-tab="sense"><span>01</span> Sense</button>
+  <button class="tab" id="tab-decide" role="tab" aria-controls="decide" aria-selected="false" data-tab="decide"><span>02</span> Decide</button>
+  <button class="tab" id="tab-act" role="tab" aria-controls="act" aria-selected="false" data-tab="act"><span>03</span> Act</button>
+  <button class="tab" id="tab-learn" role="tab" aria-controls="learn" aria-selected="false" data-tab="learn"><span>04</span> Learn</button>
+ </nav>
+</div></div>
+<div class="sr" id="announce" role="status" aria-atomic="true"></div>
+<main class="shell" id="main">
+ <section id="sense" role="tabpanel" aria-labelledby="tab-sense" tabindex="0">
+  <div class="stage"><div><p class="eyebrow">01 / Impact and evidence</p><h2>Where checkout is breaking</h2><p id="sense-caption"></p></div><span id="sense-status" class="pill"></span></div>
+  <div class="grid">
+   <div class="panel"><div class="panel-head"><h3>Store network</h3><span id="store-count" class="pill"></span></div><div class="store-grid" id="stores"></div>
+    <div class="chart" id="contacts-chart" role="img"></div><div class="axis" id="chart-axis" aria-hidden="true"></div>
+    <div class="legend"><span><i class="key"></i>Normal trading</span><span><i class="key now"></i>Modeled repeat contacts</span></div><p class="note">Eight 30-minute intervals from 10:00. The model covers the payment-specialist queue.</p>
+   </div>
+   <div class="panel"><div class="panel-head"><h3>Evidence and checks</h3></div><div id="evidence" class="evidence"></div><div id="checks" class="checks"></div></div>
+  </div>
+ </section>
+ <section id="decide" role="tabpanel" aria-labelledby="tab-decide" tabindex="0" hidden>
+  <div class="stage"><div><p class="eyebrow">02 / Workforce and mitigation</p><h2>Choose the response</h2><p>Test the staffing decision while Engineering investigates the store configuration.</p></div><span class="pill">Model projection</span></div>
+  <div class="options" id="options"></div>
+  <div class="grid even">
+   <div class="panel">
+    <div class="panel-head"><h3>Staffing assumptions</h3><span class="pill">Editable</span></div>
+    <div class="range"><label for="staff">Available payment specialists <output id="staff-value"></output></label><input id="staff" type="range" min="4" max="14" step="1"></div>
+    <details><summary>More assumptions</summary><div class="settings">
+     <div class="range"><label for="surge">Incident demand increase <output id="surge-value"></output></label><input id="surge" type="range" min="10" max="65" step="5"></div>
+     <div class="range"><label for="aht">Handle time <output id="aht-value"></output></label><input id="aht" type="range" min="3" max="9" step=".5"></div>
+     <div class="range"><label for="shrink">Shrinkage <output id="shrink-value"></output></label><input id="shrink" type="range" min="0" max="40" step="5"></div>
+     <div class="range"><label for="duration">Fix ready after <output id="duration-value"></output></label><input id="duration" type="range" min="30" max="150" step="15"></div>
+     <div class="range"><label for="eligibility">Eligible for guided recovery <output id="eligibility-value"></output></label><input id="eligibility" type="range" min="10" max="70" step="5"></div>
+     <div class="range"><label for="handoff">Guided cases still needing a human <output id="handoff-value"></output></label><input id="handoff" type="range" min="5" max="65" step="5"></div>
+     <div class="range"><label for="repeat">Incident contacts expected to repeat <output id="repeat-value"></output></label><input id="repeat" type="range" min="10" max="50" step="5"></div>
+    </div></details>
+    <div class="callout" id="recommendation"></div><p class="note" id="branch-note"></p><p class="note"><b>Zenoti precedent.</b> A role-gated tax correction workflow cut related tickets by about 85%. That historical result is separate from this model.</p>
+   </div>
+   <div class="panel"><div class="panel-head"><h3>Payment queue by interval</h3><span class="pill">End-of-interval backlog</span></div><div class="heat" id="heat"></div><div id="economics" class="table-wrap"></div><p class="note">Service target is 90% routed to a specialist within five minutes. Read the model assumptions in Learn.</p></div>
+  </div>
+ </section>
+ <section id="act" role="tabpanel" aria-labelledby="tab-act" tabindex="0" hidden>
+  <div class="stage"><div><p class="eyebrow">03 / Approval and execution</p><h2>Authorize a limited response</h2><p id="act-caption"></p></div><span class="pill">Simulated actions</span></div>
+  <div class="grid">
+   <div class="panel">
+    <div class="panel-head"><h3>Incident commander</h3><span id="approval-status" class="pill"></span></div>
+    <div id="approved-plan" class="callout"></div>
+    <div class="controls" style="margin-top:11px"><button type="button" id="approve" class="primary">Approve response</button><button type="button" id="timeout">Inject recovery timeout</button><button type="button" class="danger" id="kill">Disable guided recovery</button></div>
+    <p class="note" id="route-note"></p>
+    <div class="checks"><h3>Store and shopper update</h3><div id="comms" class="callout"></div><div class="controls" style="margin-top:8px"><button type="button" id="comms-approve">Approve simulated update</button></div></div>
+   </div>
+   <div class="panel"><div class="panel-head"><h3>Case ledger</h3><span class="pill">Read-back required</span></div><div id="ledger" class="table-wrap"></div><p class="note">These cases test controls individually. The workforce projection uses separate aggregate assumptions.</p></div>
+  </div>
+ </section>
+ <section id="learn" role="tabpanel" aria-labelledby="tab-learn" tabindex="0" hidden>
+  <div class="stage"><div><p class="eyebrow">04 / Review and next decision</p><h2>What the incident taught us</h2><p id="learn-caption"></p></div><span class="pill">Simulated outcomes</span></div>
+  <div class="grid even">
+   <div class="panel">
+    <div class="panel-head"><h3>Decision and outcomes</h3></div><div id="outcomes" class="outcomes"></div><div id="decision" class="callout"></div>
+    <div class="controls" style="margin-top:11px"><button id="brief" type="button" class="primary">Download decision brief</button><button id="json" type="button">Export scenario JSON</button><button id="share" type="button">Share assumptions</button></div>
+    <div id="share-result" hidden><label for="share-url">Reproducible scenario link</label><input id="share-url" readonly style="width:100%;margin-top:4px"></div>
+   </div>
+   <div class="panel"><div class="panel-head"><h3>What a real pilot would verify</h3></div>
+    <label class="sr" for="evidence-mode">Evidence mode</label><select id="evidence-mode"><option value="pilot">Limited rollout plan</option><option value="edges">Synthetic edge cases</option><option value="replay">Historical replay design</option></select><div id="pilot"></div>
+    <details><summary>Model and architecture</summary><ul class="compact-list">
+     <li>The forecast carries a first-in, first-out workload across eight 30-minute intervals. Productive capacity is scheduled specialists × (1 − shrinkage) ÷ average handle time. SLA uses all human-queue demand as the denominator, including work still waiting at the horizon.</li>
+     <li>Incident demand falls once a modeled fix is ready. Guided recovery removes only eligible cases assumed to be verified without a handoff. Failed and uncertain cases retain a human workload.</li>
+     <li>The reference for released hours is fix-only under the same assumptions. Dollar figures use a $32 hourly scheduled staffing cost and a $48 hourly flex cost. Removing overtime from a plan only avoids spend if the shift can actually be canceled.</li>
+     <li>Simulation uses isolated mock actions. A production design would use permission checks, approval, idempotent execution, independent destination read-back and an action audit.</li>
+    </ul></details>
+   </div>
+  </div>
+ </section>
+ <details class="panel activity"><summary>Incident activity log</summary><ol id="activity"></ol></details>
+</main>
+<footer class="shell foot"><span>Independent work sample · Madhu Poonacha</span><span>Synthetic stores, queues and approvals · Runs entirely in your browser</span></footer>
+<script>
+"use strict";
+const defaults = {staff:9,surge:35,aht:5,shrink:20,duration:75,eligibility:55,handoff:20,repeat:25};
+const ranges = {
+ staff:[4,14,1,""],surge:[10,65,5,"%"],aht:[3,9,.5," min"],shrink:[0,40,5,"%"],
+ duration:[30,150,15," min"],eligibility:[10,70,5,"%"],handoff:[5,65,5,"%"],repeat:[10,50,5,"%"]
+};
+const plans = {
+ fix:{name:"Fix configuration",flex:false,guided:false,desc:"Store Ops shares a workaround. Engineering validates the fix."},
+ flex:{name:"Add temporary coverage",flex:true,guided:false,desc:"Two flex specialists protect the queue while Engineering prepares the fix."},
+ guided:{name:"Enable guided recovery",flex:false,guided:true,desc:"Eligible cases enter a limited recovery path while Engineering prepares the fix."}
+};
+const stages = [
+ {tab:"sense",clock:"09:55",title:"Standing by",message:"Start the guided replay to inject the incident.",delay:0},
+ {tab:"sense",clock:"10:00",title:"Checkout failure detected",message:"Six stores show a payment failure spike. Store Ops starts triage.",delay:14000},
+ {tab:"sense",clock:"10:05",title:"Cause under investigation",message:"A failed configuration check aligns with the affected stores. Engineering is investigating.",delay:18000},
+ {tab:"decide",clock:"10:08",title:"Mitigation planning",message:"WFM compares coverage options while the root cause is still being verified.",delay:25000},
+ {tab:"decide",clock:"10:15",title:"Root cause verified",message:"Engineering reproduces the checkout failure with the affected configuration.",delay:15000},
+ {tab:"act",clock:"10:18",title:"Commander approval pending",message:"Review the selected response and its approval scope.",delay:17000},
+ {tab:"act",clock:"10:19",title:"Response approved",message:"The commander signs the plan. Store Ops owns communications.",delay:14000},
+ {tab:"act",clock:"10:23",title:"Recovery path tested",message:"The case ledger records the first execution decision.",delay:15000},
+ {tab:"act",clock:"10:27",title:"Exception routed to specialist",message:"A timeout with an unknown destination state stays open.",delay:14000},
+ {tab:"act",clock:"10:30",title:"Duplicate attempt checked",message:"The action ledger blocks a repeated request with the same key.",delay:14000},
+ {tab:"learn",clock:"14:00",title:"Incident review",message:"Review the modeled outcomes and decide what to validate in a pilot.",delay:0}
+];
+const normalDemand=[25,31,36,39,35,31,28,24];
+const target=90;
+const caseClock=["10:23","10:27","10:30"];
+const money = value => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value);
+const n1 = value => Number(value).toFixed(1);
+const percent = value => n1(value)+"%";
+const $ = id => document.getElementById(id);
+
+function project(a,plan,options={}) {
+ const incident=options.incident??true;
+ const guidedEnabled=plan.guided&&!options.guidedOff&&incident;
+ const flexMinutes=plan.flex&&incident?Math.min(240,Math.max(60,a.duration+30)):0;
+ const pending=[];
+ const intervals=[];
+ let queued=0,humanDemand=0,within=0,humanStarts=0,guidedAttempts=0,guidedVerified=0;
+ let repeatContacts=0,arrivals=0,peak=0,maxGap=0,intervalRepeats=0;
+ for(let minute=0;minute<240;minute++){
+  const interval=Math.floor(minute/30);
+  const base=normalDemand[interval]/30;
+  const inIncident=incident&&minute<a.duration;
+  const initial=inIncident?base*(1+a.surge/100):base;
+  const repeats=inIncident?initial*a.repeat/100:initial*.08;
+  const attempts=guidedEnabled&&inIncident?initial*a.eligibility/100*.35:0;
+  const verified=attempts*(1-a.handoff/100);
+  const human=initial+repeats-verified;
+  const scheduled=a.staff+(minute<flexMinutes?2:0);
+  let capacity=scheduled*(1-a.shrink/100)/a.aht;
+  arrivals+=initial+repeats;
+  repeatContacts+=repeats;intervalRepeats+=repeats;
+  guidedAttempts+=attempts;guidedVerified+=verified;humanDemand+=human;
+  maxGap=Math.max(maxGap,Math.ceil(human*a.aht/(1-a.shrink/100)-scheduled-1e-8));
+  pending.push({minute,work:human});queued+=human;
+  while(capacity>1e-8&&pending.length){
+   const first=pending[0], take=Math.min(first.work,capacity);
+   if(minute-first.minute<=5)within+=take;
+   first.work-=take;capacity-=take;queued-=take;humanStarts+=take;
+   if(first.work<=1e-8)pending.shift();
+  }
+  peak=Math.max(peak,queued);
+  if(minute%30===29){
+   intervals.push({backlog:Math.max(0,queued),repeats:intervalRepeats});
+   intervalRepeats=0;
+  }
+ }
+ const baseCost=a.staff*4*32;
+ const flexCost=2*flexMinutes/60*48;
+ const actionCost=guidedAttempts*.12;
+ return {sla:100*within/humanDemand,backlog:Math.max(0,queued),peak,maxGap,intervals,arrivals,repeatContacts,humanDemand,humanStarts,guidedAttempts,guidedVerified,
+  laborHours:humanDemand*a.aht/60,scheduledCost:baseCost+flexCost+actionCost,flexCost,costPerContact:(baseCost+flexCost+actionCost)/arrivals};
+}
+
+function compare(a) {
+ const projections=Object.fromEntries(Object.entries(plans).map(([id,plan])=>[id,project(a,plan)]));
+ const firstPassing=["fix","guided","flex"].find(id=>projections[id].sla>=target);
+ const recommended=firstPassing??Object.keys(plans).reduce((best,id)=>projections[id].sla>projections[best].sla?id:best,"fix");
+ const result=projections[recommended];
+ const rationale=!firstPassing?"No option meets the target. Escalate the remaining gap to WFM and the incident commander."
+  :recommended==="fix"?"Current coverage meets the modeled target. Store Ops can maintain the workaround while Engineering verifies the fix."
+  :recommended==="guided"?"Guided recovery brings the queue to target in this model. Keep specialists available for uncertain and ineligible cases."
+  :"Current staffing and guided recovery alone miss the target. Schedule two flex specialists and review coverage after the fix.";
+ return {projections,recommended,result,rationale};
+}
+
+function initialAssumptions() {
+ const params=new URLSearchParams(location.search);
+ return Object.fromEntries(Object.entries(ranges).map(([id,[min,max,step]])=>{
+  const value=params.has(id)?Number(params.get(id)):NaN;
+  return [id,Number.isFinite(value)?Math.min(max,Math.max(min,min+Math.round((value-min)/step)*step)):defaults[id]];
+ }));
+}
+const startup=initialAssumptions();
+function fresh(){
+ return {step:0,view:"sense",running:false,speed:1,assumptions:{...startup},selected:null,approved:null,
+  cases:[],activity:[],timeout:false,killed:false,comms:false,branch:false};
+}
+let state=fresh(),timer=null;
+function log(message,clock=stages[state.step].clock){state.activity.push({clock,message});}
+function halt(){clearTimeout(timer);timer=null;state.running=false;}
+function planId(){return state.approved?.id??state.selected??compare(state.assumptions).recommended;}
+function logApproval(source){
+ const id=planId();
+ state.approved={id,assumptions:{...state.assumptions},clock:stages[6].clock,source};
+ log(source+" approved "+plans[id].name+"; assumptions recorded.",stages[6].clock);
+}
+function recordCase(index){
+ const id=index===2?"PAY-101":"PAY-10"+(index+1);
+ const existing=state.cases.find(row=>row.id===id&&row.attempt===1);
+ const guided=plans[state.approved.id].guided;
+ let result,detail;
+ if(index===2&&existing&&["Verified","Open handoff"].includes(existing.result)){
+  result="Duplicate blocked";detail="Existing action key found. No second write; original outcome retained.";
+ }else if(!guided||state.killed){
+  result="Human route";detail="Payment specialist owns follow-through. No automated write was attempted.";
+ }else if(index===2){
+  result="Human route";detail="Original case was routed without a write. Specialist retains ownership.";
+ }else if(index===1||state.timeout){
+  result="Open handoff";detail="Action timed out and destination state could not be verified. Specialist checks the payment record before retry.";
+ }else{
+  result="Verified";detail="Read-back shows successful checkout recovery. One confirmed action recorded.";
+ }
+ state.cases.push({id,attempt:index===2?2:1,clock:caseClock[index],result,detail});
+ log(id+" · "+result,caseClock[index]);
+}
+function advance(source="interactive"){
+ if(state.step>=10)return false;
+ const next=state.step+1;
+ if(next===6&&!state.approved){
+  if(source!=="guided"){halt();return false;}
+  logApproval("Scripted commander");
+ }
+ state.step=next;state.view=stages[next].tab;
+ if(next===1||next===2||next===3||next===4||next===5||next===10)log(stages[next].message);
+ if(next>=7&&next<=9)recordCase(next-7);
+ if(next===9&&source==="guided"&&!state.comms){
+  state.comms=true;log("Scripted commander approved the simulated Store Ops update.");
+ }
+ if(next===10)halt();
+ return true;
+}
+function schedule(){
+ clearTimeout(timer);
+ if(!state.running||state.step===10)return;
+ timer=setTimeout(()=>update(()=>advance("guided")),(stages[state.step].delay+2000)/state.speed);
+}
+function selectTab(tab,focus=false){
+ update(()=>{halt();state.view=tab;});
+ if(focus)$("tab-"+tab).focus();
+}
+function tone(text,kind=""){return '<span class="pill '+kind+'">'+text+"</span>";}
+function metric(title,value,note,warning){
+ return '<div class="kpi'+(warning?' risk':'')+'"><div class="kpi-label">'+title+'</div><strong>'+value+'</strong><small>'+note+'</small></div>';
+}
+function renderSense(){
+ const active=state.step>0, signal=state.step>=2, confirmed=state.step>=4, review=state.step===10;
+ $("sense-caption").textContent=state.step<3?stages[state.step].message:"Inspect the store symptoms and the evidence Engineering used to verify the cause.";
+ $("sense-status").textContent=confirmed?"Cause verified":active?"Investigating":"Baseline";
+ $("sense-status").className="pill "+(confirmed?"good":active?"warn":"");
+ $("store-count").textContent=active?(review?"6 stores under monitoring":"6 of 24 affected"):"24 stores reporting";
+ $("stores").innerHTML=Array.from({length:24},(_,index)=>{
+  const affected=active&&[2,3,8,9,15,20].includes(index);
+  const status=affected?(review?"Monitor":"Affected"):"Normal";
+  const rate=affected&&!review?6.2+(index%5)*1.1:.5+(index%4)*.1;
+  return '<div class="store '+(affected?(review?"monitor":"affected"):"")+'" aria-label="Store '+(101+index)+', '+status+', '+n1(rate)+' percent checkout failure"><span>ST-'+(101+index)+'</span><strong>'+percent(rate)+'</strong><span>'+status+'</span></div>';
+ }).join("");
+ const baseline=project(state.assumptions,plans.fix,{incident:false});
+ const current=project(state.assumptions,plans.fix,{incident:active});
+ const pairs=current.intervals.map((row,i)=>[baseline.intervals[i].repeats,row.repeats]);
+ const chartMax=Math.max(1,...pairs.flat());
+ $("contacts-chart").setAttribute("aria-label","Repeat contacts by half-hour; normal baseline and modeled incident. "+pairs.map((pair,i)=>"Interval "+(i+1)+": "+pair.map(n1).join(" vs ")).join(". "));
+ $("contacts-chart").innerHTML=pairs.map(pair=>'<div class="bar-group" aria-hidden="true"><div class="bar" style="height:'+100*pair[0]/chartMax+'%"></div><div class="bar now" style="height:'+100*pair[1]/chartMax+'%"></div></div>').join("");
+ $("chart-axis").innerHTML=normalDemand.map((_,i)=>"<span>"+(10+Math.floor(i/2))+":"+(i%2?"30":"00")+"</span>").join("");
+ const evidence=[
+  ["Reported symptom",active?"Shopper reports say checkout fails after payment authorization.":"No active signal."],
+  ["Suspected cause",signal?"Payment configuration mismatch appears in the affected stores following a release.":"Awaiting a configuration comparison."],
+  ["Verified cause",confirmed?"Engineering reproduced the failure on configuration v18 and verified normal checkout on the control configuration.":"Awaiting Engineering confirmation."]
+ ];
+ $("evidence").innerHTML=evidence.map(([title,value])=>"<div><b>"+title+"</b><p>"+value+"</p></div>").join("");
+ $("checks").innerHTML=[
+  ["Payment rule parity","Engineering",signal?(review?"Fix monitored":"Exception"):"Pending",signal?(review?"good":"bad"):""],
+  ["Fallback instructions","Store Ops",active?"Available":"Pending",active?"good":""],
+  ["Duplicate-action protection","Payments QA",confirmed?"Fixture passed":"Pending",confirmed?"good":""]
+ ].map(([title,owner,status,kind])=>'<div class="check"><span><b>'+title+'</b> <small>· '+owner+'</small></span>'+tone(status,kind)+"</div>").join("");
+}
+function renderDecide(model){
+ const a=state.assumptions;
+ const draft=state.branch?null:state.selected;
+ const active=draft??model.recommended;
+ $("options").innerHTML=Object.entries(plans).map(([id,plan])=>{
+  const data=model.projections[id];
+  const title=id===model.recommended?"Recommended":id===active?"Selected":"Option";
+  return '<article class="panel option'+(id===active?" chosen":"")+'">'+tone(title,id===model.recommended?"good":"")+
+   "<h3>"+plan.name+'</h3><div class="number">'+percent(data.sla)+'</div><small class="quiet">Projected 5-minute SLA</small>'+
+   '<dl><dt>Peak backlog</dt><dd>'+n1(data.peak)+'</dd><dt>Peak staff gap</dt><dd>'+data.maxGap+'</dd><dt>Modeled cost / contact</dt><dd>'+"$"+data.costPerContact.toFixed(2)+'</dd></dl>'+
+   '<p class="note">'+plan.desc+'</p><button type="button" data-plan="'+id+'" '+(state.approved?'disabled':'aria-pressed="'+(id===active)+'"')+">"+(id===active?"Selected response":"Select response")+"</button></article>";
+ }).join("");
+ for(const [id,[,,,suffix]] of Object.entries(ranges)){
+  $(id).value=a[id];$(id+"-value").textContent=a[id]+suffix;
+ }
+ $("recommendation").innerHTML="<b>"+plans[model.recommended].name+"</b><p>"+model.rationale+"</p>";
+ $("branch-note").textContent=state.branch?"New what-if branch. The approved incident and its recorded outcomes stay tied to the original assumptions.":state.approved?"Approved assumptions are locked in the decision record. Edit a slider to explore a separate what-if.":"Edits pause the replay. The recommendation updates as assumptions change.";
+ const data=model.projections[active], reference=model.projections.fix;
+ $("heat").innerHTML=data.intervals.map((row,i)=>{
+  const clock=(10+Math.floor(i/2))+":"+(i%2?"30":"00");
+  return '<div class="'+(row.backlog>=5?"hot":"")+'" aria-label="'+clock+', '+n1(row.backlog)+' contacts waiting">'+clock+"<b>"+n1(row.backlog)+"</b></div>";
+ }).join("");
+ $("economics").innerHTML='<table><tbody><tr><th scope="row">Specialist workload released vs. fix-only</th><td>'+n1(reference.laborHours-data.laborHours)+' h</td></tr>'+
+  '<tr><th scope="row">Modeled four-hour cost-to-serve</th><td>'+money(data.scheduledCost)+'</td></tr>'+
+  '<tr><th scope="row">Incremental flex staffing spend</th><td>'+money(data.flexCost)+'</td></tr></tbody></table>';
+}
+
+function renderAct(){
+ const plan=plans[planId()], approved=state.approved;
+ $("act-caption").textContent=state.step<5?"Reach the commander review to authorize the selected response.":"An uncertain write stays open until a specialist verifies the destination state.";
+ $("approval-status").textContent=approved?"Approved · "+approved.source:state.step===5?"Approval pending":"Awaiting incident review";
+ $("approval-status").className="pill "+(approved?"good":"warn");
+ $("approved-plan").innerHTML="<b>"+plan.name+"</b><p>"+plan.desc+" Configuration changes require Engineering verification and commander approval.</p>";
+ $("approve").disabled=state.step!==5||!!approved;
+ const liveGuidance=!!approved&&plan.guided&&!state.killed&&state.step<10;
+ $("timeout").disabled=!liveGuidance||state.step!==6||state.timeout;
+ $("kill").disabled=!liveGuidance;
+ if(state.killed){
+  const original=project(approved.assumptions,plan);
+  const disabled=approvedProjection();
+  $("route-note").textContent="Guided recovery disabled. New cases route to specialists. Open cases retain their owners. Projected peak backlog "+n1(original.peak)+" → "+n1(disabled.peak)+" if guidance stays off for the modeled window.";
+ }else{
+  $("route-note").textContent=state.timeout&&state.step===6?"Timeout armed for the next attempted recovery.":"Guided recovery is restricted to a modeled 35% of eligible incident contacts when authorized.";
+ }
+ $("comms").innerHTML="<b>"+(state.comms?"Simulated update approved":"Draft · commander approval required")+"</b><p>Store Ops: continue the checkout fallback procedure. Shoppers: route uncertain payment outcomes to a specialist before retrying.</p>";
+ $("comms-approve").disabled=!approved||state.comms||state.step===10;
+ $("ledger").innerHTML=state.cases.length?'<table class="ledger"><thead><tr><th scope="col">Case / time</th><th scope="col">Decision</th><th scope="col">Evidence</th></tr></thead><tbody>'+
+  state.cases.map(row=>"<tr><td><b>"+row.id+"</b><br>"+row.clock+"</td><td>"+tone(row.result,row.result==="Verified"?"good":row.result==="Open handoff"?"warn":"")+"</td><td>"+row.detail+"</td></tr>").join("")+"</tbody></table>":'<p class="note">Awaiting approval and the first case.</p>';
+}
+function approvedProjection(){
+ return state.approved?project(state.approved.assumptions,plans[state.approved.id],{guidedOff:state.killed}):null;
+}
+function caseTotals(){
+ return {
+  verified:state.cases.filter(row=>row.result==="Verified").length,
+  handoffs:state.cases.filter(row=>row.attempt===1&&["Open handoff","Human route"].includes(row.result)).length,
+  duplicates:state.cases.filter(row=>row.result==="Duplicate blocked").length
+ };
+}
+function reviewDecision(data){
+ if(!data)return "Complete the approval and response before making a decision.";
+ if(state.killed)return "Keep human coverage in place. Re-enable guided recovery only after Engineering verifies the failure path.";
+ if(data.sla<target||data.backlog>5)return "Keep temporary coverage available and escalate the staffing gap to WFM. Verify the fix before standing down.";
+ if(state.approved.id==="flex")return "Keep flex coverage until checkout recovery is verified and the specialist queue returns to target.";
+ if(state.approved.id==="fix")return "Maintain the workaround until Store Ops verifies checkout recovery and WFM confirms the specialist queue has normalized.";
+ return "Keep the specialist fallback staffed. Expand guided recovery only after the pilot meets its quality and service targets.";
+}
+function renderLearn(){
+ const approved=state.approved, data=approvedProjection(), totals=caseTotals();
+ $("learn-caption").textContent=state.step===10?"Compare the approved plan with the evidence from this simulated run.":"The review will update as approved actions are recorded.";
+ $("outcomes").innerHTML=[
+  [totals.verified,"Verified recoveries"],[totals.handoffs,"Open specialist cases"],[totals.duplicates,"Duplicate writes prevented"]
+ ].map(([value,label])=>'<div class="outcome"><strong class="number">'+value+"</strong><small>"+label+"</small></div>").join("");
+ const branch=state.branch?compare(state.assumptions):null;
+ $("decision").innerHTML="<b>"+reviewDecision(data)+"</b>"+
+  (approved?"<p>Approved: "+plans[approved.id].name+" · "+approved.assumptions.staff+" specialists · "+approved.source+". "+(state.killed?"Four-hour SLA estimate if guidance stays off: ":"Projected SLA: ")+percent(data.sla)+" · "+n1(data.backlog)+" waiting at horizon.</p>":"")+
+  (branch?"<p>Separate what-if: "+state.assumptions.staff+" specialists · "+plans[branch.recommended].name+" · "+percent(branch.result.sla)+" projected SLA.</p>":"");
+ $("brief").disabled=state.step!==10;
+ $("json").disabled=state.step===0;
+ const mode=$("evidence-mode").value;
+ if(mode==="pilot"){
+  $("pilot").innerHTML='<ul class="compact-list"><li><b>Owner:</b> Store Ops and Payments Engineering run a limited pilot. WFM owns the staffing review and Finance validates avoidable spend.</li><li><b>Compare:</b> Stagger comparable stores, report recovery and 24-hour repeat contacts over matched trading windows, and review sample size before expanding.</li><li><b>Stop:</b> Pause on any duplicate write, an unowned uncertain outcome, or a sustained breach of the agreed service threshold.</li></ul>';
+ }else if(mode==="edges"){
+  const cases=state.cases;
+  const checks=[
+   ["Destination read-back","Verified"],
+   ["Uncertain outcome handed off","Open handoff"],
+   ["Duplicate write blocked","Duplicate blocked"]
+  ];
+  $("pilot").innerHTML='<ul class="compact-list">'+checks.map(([name,result])=>"<li>"+name+" · "+(cases.some(row=>row.result===result)?"Observed in this run":"Awaiting matching outcome")+"</li>").join("")+"</ul>";
+ }else{
+  $("pilot").innerHTML='<p class="note">Replay de-identified historic cases against a fixed policy version. Compare intent, routing and action eligibility with human-reviewed labels. Use the differences to size a pilot and estimate effort.</p>';
+ }
+}
+function render(){
+ const model=compare(state.assumptions);
+ const snapshot=state.approved?.assumptions??state.assumptions;
+ const active=state.step>0;
+ const data=state.approved?approvedProjection():project(snapshot,plans[planId()],{incident:active});
+ const normal=project(snapshot,plans.fix,{incident:false});
+ const stage=stages[state.step];
+ $("incident-status").textContent=stage.title;
+ $("incident-clock").textContent="Simulated clock "+stage.clock;
+ $("kpis").innerHTML=
+  metric("Checkout failures",state.step===10?"0.8%":active?"7.8%":"0.7%",state.step===10?"Fictional post-fix checkpoint":active?"Fictional affected-store sample":"Fictional baseline",active&&state.step<10)+
+  metric("Repeat contacts",n1(data.repeatContacts),n1(normal.repeatContacts)+" baseline · projection",active)+
+  metric("Projected SLA",percent(data.sla),target+"% within five minutes",data.sla<target)+
+  metric("Peak specialist gap",data.maxGap+" seats","Payment queue · projection",data.maxGap>0);
+ $("play").textContent=state.running?"Pause":state.step===0?"Play guided replay":state.step===10?"Replay incident":"Resume guided replay";
+ $("next").disabled=state.step===10||state.step===5;
+ $("speed").value=state.speed;
+ $("run-status").innerHTML="<b>"+(state.running?"Guided replay":state.step===10?"Review ready":state.step===0?"Ready":"Paused")+"</b> · "+state.step+" / "+(stages.length-1)+" events";
+ document.querySelectorAll("[data-tab]").forEach(tab=>{
+  const selected=tab.dataset.tab===state.view;
+  tab.setAttribute("aria-selected",String(selected));tab.tabIndex=selected?0:-1;
+  $(tab.dataset.tab).hidden=!selected;
+ });
+ const announcement=stage.title+". "+stage.message;
+ if($("announce").textContent!==announcement)$("announce").textContent=announcement;
+ renderSense();renderDecide(model);renderAct();renderLearn();
+ $("activity").innerHTML=state.activity.length?state.activity.map(entry=>"<li><time>"+entry.clock+"</time> · "+entry.message+"</li>").join(""):"<li>Awaiting the first incident event.</li>";
+}
+function update(action){
+ const previousView=state.view;
+ action();render();schedule();
+ if(previousView!==state.view){
+  const panel=$(state.view);panel.classList.remove("changed");void panel.offsetWidth;panel.classList.add("changed");
+  const mainTop=$("main").getBoundingClientRect().top;
+  const dockBottom=document.querySelector(".dock").getBoundingClientRect().bottom;
+  if(mainTop<dockBottom-4)window.scrollBy({top:mainTop-dockBottom-10,behavior:"instant"});
+ }
+}
+function reset(){
+ halt();state=fresh();$("share-result").hidden=true;$("evidence-mode").value="pilot";
+}
+function download(filename,content,mime){
+ const objectUrl=URL.createObjectURL(new Blob([content],{type:mime}));
+ const link=document.createElement("a");link.href=objectUrl;link.download=filename;document.body.append(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);
+}
+function brief(){
+ const approved=state.approved,data=approvedProjection(),totals=caseTotals();
+ const branch=state.branch?compare(state.assumptions):null;
+ return [
+  "CHECKOUT INCIDENT CI-042 | DECISION BRIEF",
+  "Fictional retail operations work sample",
+  "",
+  "Decision: "+reviewDecision(data),
+  "Approved response: "+plans[approved.id].name+" by "+approved.source+" at "+approved.clock+".",
+  "Approved assumptions: "+Object.entries(approved.assumptions).map(([id,val])=>id+"="+val).join(" · "),
+  "Simulated cases: "+totals.verified+" verified, "+totals.handoffs+" open specialist cases, "+totals.duplicates+" duplicate writes prevented.",
+  "Four-hour projection"+(state.killed?" (guided recovery off)":"")+": "+percent(data.sla)+" SLA; "+n1(data.backlog)+" waiting at horizon; "+money(data.scheduledCost)+" modeled cost.",
+  "Stand-down: Store Ops confirms checkout recovery, Engineering verifies the fix, and WFM confirms service and the payment queue have recovered.",
+  "Pilot: Compare equivalent stores and matched trading windows. Track checkout recovery, 24-hour repeat contacts, action exceptions and hours released.",
+  "Stop condition: Any duplicate write, unowned uncertain outcome, or sustained breach of the agreed service threshold.",
+  branch?"Separate what-if: "+state.assumptions.staff+" specialists; "+plans[branch.recommended].name+"; "+percent(branch.result.sla)+" projected SLA.":""
+ ].filter(Boolean).join("\n");
+}
+$("play").addEventListener("click",()=>update(()=>{
+ if(state.running){halt();return;}
+ if(state.step===10){const speed=state.speed;reset();state.speed=speed;}
+ state.running=true;state.view=stages[state.step].tab;
+ if(state.step===0)advance("guided");
+}));
+$("next").addEventListener("click",()=>update(()=>{halt();advance();}));
+$("reset").addEventListener("click",()=>update(reset));
+$("speed").addEventListener("change",event=>{state.speed=Number(event.target.value);schedule();});
+document.querySelectorAll("[data-tab]").forEach(tab=>tab.addEventListener("click",()=>selectTab(tab.dataset.tab)));
+document.querySelector(".tabs").addEventListener("keydown",event=>{
+ if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
+ const ids=["sense","decide","act","learn"], index=ids.indexOf(state.view);
+ const to=event.key==="Home"?0:event.key==="End"?3:(index+(event.key==="ArrowLeft"?3:1))%4;
+ event.preventDefault();selectTab(ids[to],true);
+});
+for(const id of Object.keys(ranges)){
+ $(id).addEventListener("input",event=>update(()=>{
+  halt();
+  state.assumptions[id]=Number(event.target.value);
+  state.branch=!!state.approved&&Object.keys(ranges).some(key=>state.assumptions[key]!==state.approved.assumptions[key]);
+  state.selected=null;
+  $("share-result").hidden=true;
+ }));
+}
+$("options").addEventListener("click",event=>{
+ const button=event.target.closest("[data-plan]");
+ if(!button||state.approved)return;
+ const id=button.dataset.plan;
+ update(()=>{halt();state.selected=id;log("Selected "+plans[id].name+" for commander review.");});
+ $("options").querySelector('[data-plan="'+id+'"]').focus();
+});
+$("approve").addEventListener("click",()=>update(()=>{
+ if(state.step!==5||state.approved)return;
+ halt();logApproval("Interactive commander");advance();
+}));
+$("timeout").addEventListener("click",()=>update(()=>{
+ if(!state.approved||!plans[state.approved.id].guided||state.step!==6||state.killed)return;
+ halt();state.timeout=true;log("Test injection: next recovery cannot verify destination state.");
+}));
+$("kill").addEventListener("click",()=>update(()=>{
+ if(!state.approved||!plans[state.approved.id].guided||state.killed||state.step===10)return;
+ halt();state.killed=true;log("Commander disabled guided recovery. Route new cases to specialists.");
+}));
+$("comms-approve").addEventListener("click",()=>update(()=>{
+ if(!state.approved||state.comms||state.step===10)return;
+ halt();state.comms=true;log("Interactive commander approved the simulated Store Ops update.");
+}));
+$("evidence-mode").addEventListener("change",()=>{halt();render();});
+$("brief").addEventListener("click",()=>{if(state.step===10)download("checkout-incident-decision-brief.txt",brief(),"text/plain");});
+$("json").addEventListener("click",()=>download("checkout-incident-scenario.json",JSON.stringify({fictional:true,id:"CI-042",...state,approvedProjection:approvedProjection(),whatIf:compare(state.assumptions)},null,2),"application/json"));
+$("share").addEventListener("click",()=>{
+ const url=new URL(location.href);url.search="";url.hash="";
+ Object.entries(state.assumptions).forEach(([key,value])=>url.searchParams.set(key,value));
+ $("share-result").hidden=false;$("share-url").value=url.href;$("share-url").focus();$("share-url").select();
+});
+render();
+</script>
+</body>
+</html>

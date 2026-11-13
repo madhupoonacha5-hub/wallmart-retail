@@ -49,6 +49,7 @@ main{padding:17px 0 26px}.stage{display:flex;justify-content:space-between;align
   <button class="tab" id="tab-decide" role="tab" aria-controls="decide" aria-selected="false" data-tab="decide"><span>02</span> Decide</button>
   <button class="tab" id="tab-act" role="tab" aria-controls="act" aria-selected="false" data-tab="act"><span>03</span> Act</button>
   <button class="tab" id="tab-learn" role="tab" aria-controls="learn" aria-selected="false" data-tab="learn"><span>04</span> Learn</button>
+  <button class="tab" id="tab-operate" role="tab" aria-controls="operate" aria-selected="false" data-tab="operate"><span>05</span> Operate</button>
  </nav>
 </div></div>
 <div class="sr" id="announce" role="status" aria-atomic="true"></div>
@@ -79,7 +80,7 @@ main{padding:17px 0 26px}.stage{display:flex;justify-content:space-between;align
      <div class="range"><label for="handoff">Guided cases still needing a human <output id="handoff-value"></output></label><input id="handoff" type="range" min="5" max="65" step="5"></div>
      <div class="range"><label for="repeat">Incident contacts expected to repeat <output id="repeat-value"></output></label><input id="repeat" type="range" min="10" max="50" step="5"></div>
     </div></details>
-    <div class="callout" id="recommendation"></div><p class="note" id="branch-note"></p><p class="note"><b>Zenoti precedent.</b> A role-gated tax correction workflow cut related tickets by about 85%. That historical result is separate from this model.</p>
+    <div class="callout" id="recommendation"></div><p class="note" id="branch-note"></p><p class="note"><b>Zenoti precedent.</b> A role-gated tax correction workflow cut SQL correction requests to Engineering by about 85%. That historical result is separate from this model.</p>
    </div>
    <div class="panel"><div class="panel-head"><h3>Payment queue by interval</h3><span class="pill">End-of-interval backlog</span></div><div class="heat" id="heat"></div><div id="economics" class="table-wrap"></div><p class="note">Service target is 90% routed to a specialist within five minutes. Read the model assumptions in Learn.</p></div>
   </div>
@@ -115,6 +116,16 @@ main{padding:17px 0 26px}.stage{display:flex;justify-content:space-between;align
     </ul></details>
    </div>
   </div>
+ <div class="panel" id="ai-quality"></div>
+ </section>
+ <section id="operate" role="tabpanel" aria-labelledby="tab-operate" tabindex="0" hidden>
+  <div class="stage"><div><p class="eyebrow">05 / The operating system</p><h2>How I would run the operation</h2><p>One incident tests the mechanisms. This view shows the scorecard, capacity economics, channels, people and learning loop behind it.</p></div><span class="pill">Illustrative targets</span></div>
+  <div class="grid even"><div class="panel"><div class="panel-head"><h3>Operating scorecard</h3></div><div id="op-score-body"></div></div>
+   <div class="panel"><div class="panel-head"><h3>Capacity and economics</h3><span class="pill">Sensitivity</span></div><div class="range"><label for="yearly">Incidents like this per year <output id="yearly-value"></output></label><input id="yearly" type="range" min="1" max="24" step="1" value="6"></div><div id="op-econ-body"></div></div></div>
+  <div class="grid even"><div class="panel"><div class="panel-head"><h3>Channels and proactive contact</h3></div><div class="range"><label for="reach">Shoppers reached by a proactive message <output id="reach-value"></output></label><input id="reach" type="range" min="0" max="60" step="5" value="30"></div><div id="op-chan-body"></div></div>
+   <div class="panel"><div class="panel-head"><h3>People and decision rights</h3></div><div id="op-people-body"></div></div></div>
+  <div class="grid even"><div class="panel"><div class="panel-head"><h3>Customer insight to prevention</h3></div><div id="op-learn-body"></div></div>
+   <div class="panel"><div class="panel-head"><h3>First 90 days</h3></div><div id="op-plan-body"></div></div></div>
  </section>
  <details class="panel activity"><summary>Incident activity log</summary><ol id="activity"></ol></details>
 </main>
@@ -129,7 +140,7 @@ const ranges = {
 const plans = {
  fix:{name:"Fix configuration",flex:false,guided:false,desc:"Store Ops shares a workaround. Engineering validates the fix."},
  flex:{name:"Add temporary coverage",flex:true,guided:false,desc:"Two flex specialists protect the queue while Engineering prepares the fix."},
- guided:{name:"Enable guided recovery",flex:false,guided:true,desc:"Eligible cases enter a limited recovery path while Engineering prepares the fix."}
+ guided:{name:"Enable guided recovery",flex:false,guided:true,desc:"An AI assistant routes eligible cases into a limited recovery path with read-back verification while Engineering prepares the fix."}
 };
 const stages = [
  {tab:"sense",clock:"09:55",title:"Standing by",message:"Start the guided replay to inject the incident.",delay:0},
@@ -149,6 +160,34 @@ const target=90;
 const caseClock=["10:23","10:27","10:30"];
 const money = value => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value);
 const n1 = value => Number(value).toFixed(1);
+const ops={reach:30,yearly:6};
+const n0=v=>String(Math.round(v));
+const tbl=(h,rows)=>'<div class="table-wrap"><table><thead><tr>'+h.map(x=>'<th scope="col">'+x+'</th>').join("")+'</tr></thead><tbody>'+rows.map(r=>"<tr>"+r.map((c,i)=>(i?"<td>":'<th scope="row">')+c+(i?"</td>":"</th>")).join("")+"</tr>").join("")+"</tbody></table></div>";
+function renderAIQuality(data){
+ const rows=state.cases,att=rows.filter(r=>r.attempt===1&&["Verified","Open handoff"].includes(r.result)).length,ver=rows.filter(r=>r.result==="Verified").length;
+ $("ai-quality").innerHTML='<div class="panel-head"><h3>How the AI step is judged</h3><span class="pill">Not containment alone</span></div>'+tbl(["Measure","This run"],[["Recoveries attempted by the AI assistant (ledger cases)",att],["Confirmed by destination read-back",ver],["Handed to a specialist, outcome unconfirmed",att-ver],["Modeled attempts and verified, four hours",n0(data.guidedAttempts)+" and "+n0(data.guidedVerified)]])+'<p class="note">A case counts as resolved only after read-back. A pilot is judged on confirmed resolution, 24-hour repeat contacts, escalations and CSAT, with containment shown separately. It is the same discipline as reporting about 60% deflection and about 40% confirmed resolved in my Zenoti work.</p><div class="controls" style="margin-top:11px"><button type="button" id="to-operate">Next: how I would run the operation</button></div>';
+}
+function renderOperate(data,a){
+ const rep=data.repeatContacts/data.arrivals*100,cpc=data.costPerContact,ok=v=>v===null?tone("Set with baseline"):tone(v?"On target":"Off target",v?"good":"warn");
+ $("op-score-body").innerHTML=tbl(["Measure","Illustrative target","This incident","Status","Owner and cadence"],[
+  ["Service level, five minutes","90%",percent(data.sla),ok(data.sla>=target),"WFM, intraday"],
+  ["Repeat-contact rate","Under 10%",n1(rep)+"%",ok(rep<10),"CX Ops, daily"],
+  ["Average handle time","5 min",a.aht+" min",ok(a.aht<=5),"Team leads, daily"],
+  ["Shrinkage","20%",a.shrink+"%",ok(a.shrink<=20),"WFM, weekly"],
+  ["Cost per contact, four hours","Under $3.80","$"+cpc.toFixed(2),ok(cpc<3.8),"Finance partner, weekly"],
+  ["First-contact resolution, quality, CSAT, abandonment, attrition","Set against a real baseline","Not modeled",ok(null),"Quality and People, weekly"]]);
+ $("yearly-value").textContent=ops.yearly;
+ const flex=project(a,plans.flex),g=project(a,plans.guided);
+ $("op-econ-body").innerHTML=tbl(["Eligible for guided recovery","Guided SLA","Cost per contact","Meets 90%"],[15,25,35,45,55,65].map(e=>{const s=project({...a,eligibility:e},plans.guided);return[e+"%"+(e===a.eligibility?" (current)":""),percent(s.sla),"$"+s.costPerContact.toFixed(2),s.sla>=target?"Yes":"No"]}))+'<p class="note">Compared with two flex specialists ('+percent(flex.sla)+' SLA, $'+flex.costPerContact.toFixed(2)+' per contact), guided recovery at the current eligibility changes four-hour spend by '+money((g.scheduledCost-flex.scheduledCost))+' per incident, or '+money((g.scheduledCost-flex.scheduledCost)*ops.yearly)+' a year at '+ops.yearly+' incidents. Overtime and fatigue guardrails are set with People before any staffing plan is approved.</p>';
+ $("reach-value").textContent=ops.reach+"%";
+ const avoided=data.repeatContacts*ops.reach/100*.5;
+ $("op-chan-body").innerHTML=tbl(["Channel","Normal share","Incident share","Response"],[["Voice","45%","60%","Specialist queue and guided recovery"],["Chat","35%","25%","AI assistant with read-back, handoff on uncertainty"],["Digital","20%","15%","Status banner and message"]])+'<p class="note">Assumption: each reached shopper avoids a repeat contact half the time. Proactive messaging avoids about '+n0(avoided)+' contacts, worth '+money(avoided*cpc_(data))+' at the modeled cost per contact. All shares are illustrative.</p>';
+ $("op-people-body").innerHTML=tbl(["Decision","Owner","Input from"],[["Fix and release gate","Technology","Payments Engineering, QA"],["Shopper and store messaging","Product with Store Ops","CX insight"],["Staffing and overtime","WFM","People, Finance"],["Avoidable spend sign-off","Finance","WFM"],["Associate fatigue and attrition","People","Team leads"]])+'<p class="note">Illustrative layers: Director, four senior managers, about 16 managers and 80 team leads, with spans reviewed monthly and a named successor for every manager. My current organizations are smaller (70+ direct and matrixed inside a 100+ ecosystem), so the claim is the mechanism, not the scale.</p>';
+ $("op-learn-body").innerHTML=tbl(["Repeat-contact driver","Prevention","Owner"],[["Payment configuration mismatch after a release","Release gate that compares store configurations","Technology"],["Unclear decline and retry messages","Rewrite messages, test with shoppers","Product"],["Shoppers fear a double charge","Proactive payment status","Product, CX"],["Stores unsure of the fallback","One-page store job aid","Store Ops"]])+'<p class="note">Ranked by contacts avoided once real volumes are known. Each item has an owner, a date and a measured closure.</p>';
+ $("op-plan-body").innerHTML='<ul class="compact-list"><li><b>Days 1 to 30:</b> baseline the scorecard, meet the site and team leaders, map channels and handoffs, and agree targets with Finance and WFM.</li><li><b>Days 31 to 60:</b> run the weekly operating review, fix the top repeat-contact drivers, and design one AI pilot with a holdout and stop rules.</li><li><b>Days 61 to 90:</b> report outcomes to leadership, set the succession bench, and decide what to scale, iterate or stop.</li></ul>';
+}
+const cpc_=d=>d.costPerContact;
+
 const percent = value => n1(value)+"%";
 const $ = id => document.getElementById(id);
 
@@ -285,7 +324,7 @@ function renderSense(){
  $("stores").innerHTML=Array.from({length:24},(_,index)=>{
   const affected=active&&[2,3,8,9,15,20].includes(index);
   const status=affected?(review?"Monitor":"Affected"):"Normal";
-  const rate=affected&&!review?6.2+(index%5)*1.1:.5+(index%4)*.1;
+  const rate=affected&&!review?6.2+(index%5)*1.1:affected?.9+(index%3)*.2:.5+(index%4)*.1;
   return '<div class="store '+(affected?(review?"monitor":"affected"):"")+'" aria-label="Store '+(101+index)+', '+status+', '+n1(rate)+' percent checkout failure"><span>ST-'+(101+index)+'</span><strong>'+percent(rate)+'</strong><span>'+status+'</span></div>';
  }).join("");
  const baseline=project(state.assumptions,plans.fix,{incident:false});
@@ -316,7 +355,7 @@ function renderDecide(model){
   const title=id===model.recommended?"Recommended":id===active?"Selected":"Option";
   return '<article class="panel option'+(id===active?" chosen":"")+'">'+tone(title,id===model.recommended?"good":"")+
    "<h3>"+plan.name+'</h3><div class="number">'+percent(data.sla)+'</div><small class="quiet">Projected 5-minute SLA</small>'+
-   '<dl><dt>Peak backlog</dt><dd>'+n1(data.peak)+'</dd><dt>Peak staff gap</dt><dd>'+data.maxGap+'</dd><dt>Modeled cost / contact</dt><dd>'+"$"+data.costPerContact.toFixed(2)+'</dd></dl>'+
+   '<dl><dt>Peak backlog (contacts)</dt><dd>'+n0(data.peak)+'</dd><dt>Peak staff gap</dt><dd>'+data.maxGap+'</dd><dt>Modeled cost / contact</dt><dd>'+"$"+data.costPerContact.toFixed(2)+'</dd></dl>'+
    '<p class="note">'+plan.desc+'</p><button type="button" data-plan="'+id+'" '+(state.approved?'disabled':'aria-pressed="'+(id===active)+'"')+">"+(id===active?"Selected response":"Select response")+"</button></article>";
  }).join("");
  for(const [id,[,,,suffix]] of Object.entries(ranges)){
@@ -327,7 +366,7 @@ function renderDecide(model){
  const data=model.projections[active], reference=model.projections.fix;
  $("heat").innerHTML=data.intervals.map((row,i)=>{
   const clock=(10+Math.floor(i/2))+":"+(i%2?"30":"00");
-  return '<div class="'+(row.backlog>=5?"hot":"")+'" aria-label="'+clock+', '+n1(row.backlog)+' contacts waiting">'+clock+"<b>"+n1(row.backlog)+"</b></div>";
+  return '<div class="'+(row.backlog>=5?"hot":"")+'" aria-label="'+clock+', '+n0(row.backlog)+' contacts waiting">'+clock+"<b>"+n0(row.backlog)+"</b></div>";
  }).join("");
  $("economics").innerHTML='<table><tbody><tr><th scope="row">Specialist workload released vs. fix-only</th><td>'+n1(reference.laborHours-data.laborHours)+' h</td></tr>'+
   '<tr><th scope="row">Modeled four-hour cost-to-serve</th><td>'+money(data.scheduledCost)+'</td></tr>'+
@@ -412,7 +451,7 @@ function render(){
  $("incident-clock").textContent="Simulated clock "+stage.clock;
  $("kpis").innerHTML=
   metric("Checkout failures",state.step===10?"0.8%":active?"7.8%":"0.7%",state.step===10?"Fictional post-fix checkpoint":active?"Fictional affected-store sample":"Fictional baseline",active&&state.step<10)+
-  metric("Repeat contacts",n1(data.repeatContacts),n1(normal.repeatContacts)+" baseline · projection",active)+
+  metric("Repeat contacts, 4 hours",n0(data.repeatContacts),n0(normal.repeatContacts)+" baseline · projection",active)+
   metric("Projected SLA",percent(data.sla),target+"% within five minutes",data.sla<target)+
   metric("Peak specialist gap",data.maxGap+" seats","Payment queue · projection",data.maxGap>0);
  $("play").textContent=state.running?"Pause":state.step===0?"Play guided replay":state.step===10?"Replay incident":"Resume guided replay";
@@ -426,7 +465,7 @@ function render(){
  });
  const announcement=stage.title+". "+stage.message;
  if($("announce").textContent!==announcement)$("announce").textContent=announcement;
- renderSense();renderDecide(model);renderAct();renderLearn();
+ renderSense();renderDecide(model);renderAct();renderLearn();renderAIQuality(data);renderOperate(data,snapshot);
  $("activity").innerHTML=state.activity.length?state.activity.map(entry=>"<li><time>"+entry.clock+"</time> · "+entry.message+"</li>").join(""):"<li>Awaiting the first incident event.</li>";
 }
 function update(action){
@@ -477,8 +516,8 @@ $("speed").addEventListener("change",event=>{state.speed=Number(event.target.val
 document.querySelectorAll("[data-tab]").forEach(tab=>tab.addEventListener("click",()=>selectTab(tab.dataset.tab)));
 document.querySelector(".tabs").addEventListener("keydown",event=>{
  if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
- const ids=["sense","decide","act","learn"], index=ids.indexOf(state.view);
- const to=event.key==="Home"?0:event.key==="End"?3:(index+(event.key==="ArrowLeft"?3:1))%4;
+ const ids=["sense","decide","act","learn","operate"], index=ids.indexOf(state.view);
+ const to=event.key==="Home"?0:event.key==="End"?4:(index+(event.key==="ArrowLeft"?4:1))%5;
  event.preventDefault();selectTab(ids[to],true);
 });
 for(const id of Object.keys(ranges)){
@@ -521,6 +560,9 @@ $("share").addEventListener("click",()=>{
  Object.entries(state.assumptions).forEach(([key,value])=>url.searchParams.set(key,value));
  $("share-result").hidden=false;$("share-url").value=url.href;$("share-url").focus();$("share-url").select();
 });
+$("yearly").addEventListener("input",e=>{ops.yearly=Number(e.target.value);render();});
+$("reach").addEventListener("input",e=>{ops.reach=Number(e.target.value);render();});
+document.addEventListener("click",e=>{if(e.target.id==="to-operate")selectTab("operate",true);});
 render();
 </script>
 </body>
